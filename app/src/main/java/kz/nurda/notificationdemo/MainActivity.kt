@@ -2,9 +2,10 @@ package kz.nurda.notificationdemo
 
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import kotlinx.android.synthetic.main.activity_main.*
@@ -25,11 +26,19 @@ class MainActivity : AppCompatActivity() {
         btnChannel2.setOnClickListener { sendOnChannel2() }
     }
 
-    private fun sendOnChannel1(){
+    private fun sendOnChannel1() {
+
+        val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.chamel)
+
         val notification = NotificationCompat.Builder(this, CHANNEL_1_ID)
             .setSmallIcon(R.drawable.ic_looks_one_black_24dp)
             .setContentTitle(etTitle.text.toString())
             .setContentText(etDescription.text.toString())
+            .setLargeIcon(largeIcon)
+            .setStyle(NotificationCompat.BigTextStyle()
+                .bigText(getString(R.string.long_text))
+                .setBigContentTitle("Big Content Title")
+                .setSummaryText("Summary text"))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setColor(Color.BLUE)
 //            .setCategory(NotificationCompat.CATEGORY_PROMO)
@@ -45,11 +54,19 @@ class MainActivity : AppCompatActivity() {
         notificationManagerCompat.notify(1, notification)
     }
 
-    private fun sendOnChannel2(){
+    private fun sendOnChannel2() {
         val notification = NotificationCompat.Builder(this, CHANNEL_2_ID)
             .setSmallIcon(R.drawable.ic_looks_two_black_24dp)
             .setContentTitle(etTitle.text.toString())
             .setContentText(etDescription.text.toString())
+            .setStyle(NotificationCompat.InboxStyle()
+                .addLine("Line bir")
+                .addLine("Line eki")
+                .addLine("Line ush")
+                .addLine("Line tort")
+                .addLine("Line bes")
+                .setBigContentTitle("Big Content Title")
+                .setSummaryText("Summary text"))
             .setPriority(NotificationCompat.PRIORITY_LOW)
 //            .setCategory(NotificationCompat.CATEGORY_PROMO)
             .build()
