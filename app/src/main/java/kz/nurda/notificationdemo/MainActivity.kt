@@ -1,5 +1,8 @@
 package kz.nurda.notificationdemo
 
+import android.app.PendingIntent
+import android.content.Intent
+import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
@@ -28,7 +31,15 @@ class MainActivity : AppCompatActivity() {
             .setContentTitle(etTitle.text.toString())
             .setContentText(etDescription.text.toString())
             .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setColor(Color.BLUE)
 //            .setCategory(NotificationCompat.CATEGORY_PROMO)
+            .setContentIntent(getPendingIntent())
+            .setAutoCancel(true)
+            .addAction(
+                R.mipmap.ic_launcher,
+                "Toast",
+                getActionPendingIntent()
+            )
             .build()
 
         notificationManagerCompat.notify(1, notification)
@@ -44,5 +55,28 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         notificationManagerCompat.notify(2, notification)
+    }
+
+    private fun getPendingIntent(): PendingIntent {
+        val intent = Intent(this, MainActivity::class.java)
+
+        return PendingIntent.getActivity(
+            this,
+            0,
+            intent,
+            0
+        )
+    }
+
+    private fun getActionPendingIntent(): PendingIntent {
+        val broadcastIntent = Intent(this, NotificationReceiver::class.java)
+        broadcastIntent.putExtra(getString(R.string.toast_message), etDescription.text.toString())
+
+        return PendingIntent.getBroadcast(
+            this,
+            0,
+            broadcastIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT
+        )
     }
 }
