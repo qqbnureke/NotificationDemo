@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
 import android.os.SystemClock
-import android.support.v4.media.session.MediaSessionCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -16,25 +15,27 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kz.nurda.notificationdemo.BaseApplication.Companion.CHANNEL_1_ID
 import kz.nurda.notificationdemo.BaseApplication.Companion.CHANNEL_2_ID
 
+
+
 class MainActivity : AppCompatActivity() {
 
 
     lateinit var notificationManagerCompat: NotificationManagerCompat
-    lateinit var mediaSesion: MediaSessionCompat
+//    lateinit var mediaSesion: MediaSessionCompat
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         notificationManagerCompat = NotificationManagerCompat.from(this)
-        mediaSesion = MediaSessionCompat(this, "tag")
+//        mediaSesion = MediaSessionCompat(this, "tag")
 
         MESSAGES.add(Message("Good Morning", "Jim"))
         MESSAGES.add(Message("Hi", null))
         MESSAGES.add(Message("Helllo", "Jenny"))
 
         btnChannel1.setOnClickListener { sendOnChannel1() }
-        btnChannel2.setOnClickListener { downloadNotification() }
+        btnChannel2.setOnClickListener { notificationGroups() }
     }
 
     private fun sendOnChannel1() {
@@ -90,7 +91,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun mediaNotification() {
-
+/*
         val largeIcon = BitmapFactory.decodeResource(resources, R.drawable.chamel)
 
         val notification = NotificationCompat.Builder(this, CHANNEL_2_ID)
@@ -114,6 +115,8 @@ class MainActivity : AppCompatActivity() {
             .build()
 
         notificationManagerCompat.notify(2, notification)
+
+ */
     }
 
     companion object {
@@ -196,6 +199,51 @@ class MainActivity : AppCompatActivity() {
                 .setOngoing(false   )
             notificationManagerCompat.notify(2, notification.build())
         }).start()
+    }
+
+    private fun notificationGroups(){
+        val title1 = "Title 1"
+        val message1 = "Message 1"
+        val title2 = "Title 2"
+        val message2 = "Message 2"
+
+        val notification1 = NotificationCompat.Builder(this, CHANNEL_2_ID)
+            .setSmallIcon(R.drawable.ic_looks_two_black_24dp)
+            .setContentTitle(title1)
+            .setContentText(message1)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setGroup("example_group")
+            .build()
+
+        val notification2 = NotificationCompat.Builder(this, CHANNEL_2_ID)
+            .setSmallIcon(R.drawable.ic_looks_two_black_24dp)
+            .setContentTitle(title2)
+            .setContentText(message2)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setGroup("example_group")
+            .build()
+
+        val summaryNotification = NotificationCompat.Builder(this, CHANNEL_2_ID)
+            .setSmallIcon(R.drawable.ic_reply_black_24dp)
+            .setStyle(
+                NotificationCompat.InboxStyle()
+                    .addLine("$title2 $message2")
+                    .addLine("$title1 $message1")
+                    .setBigContentTitle("2 new messages")
+                    .setSummaryText("user@example.com")
+            )
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setGroup("example_group")
+            .setGroupAlertBehavior(NotificationCompat.GROUP_ALERT_CHILDREN)
+            .setGroupSummary(true)
+            .build()
+
+        SystemClock.sleep(2000)
+        notificationManagerCompat.notify(2, notification1)
+        SystemClock.sleep(2000)
+        notificationManagerCompat.notify(3, notification2)
+        SystemClock.sleep(2000)
+        notificationManagerCompat.notify(4, summaryNotification)
     }
 
     private fun getPendingIntent(): PendingIntent {
