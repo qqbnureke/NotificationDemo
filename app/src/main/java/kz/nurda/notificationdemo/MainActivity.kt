@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.os.Bundle
+import android.os.SystemClock
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -33,7 +34,7 @@ class MainActivity : AppCompatActivity() {
         MESSAGES.add(Message("Helllo", "Jenny"))
 
         btnChannel1.setOnClickListener { sendOnChannel1() }
-        btnChannel2.setOnClickListener { messagingNotification(this) }
+        btnChannel2.setOnClickListener { downloadNotification() }
     }
 
     private fun sendOnChannel1() {
@@ -168,7 +169,35 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
-    
+
+    private fun downloadNotification() {
+        val maxProgress = 100
+
+        val notification = NotificationCompat.Builder(this, CHANNEL_2_ID)
+            .setSmallIcon(R.drawable.ic_looks_two_black_24dp)
+            .setContentTitle("Download")
+            .setContentText("Download in progress")
+            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setOngoing(true)
+            .setOnlyAlertOnce(true)
+            .setProgress(maxProgress, 0, false)
+
+        notificationManagerCompat.notify(2, notification.build())
+
+        Thread(Runnable {
+            SystemClock.sleep(2000)
+            for (i in 0..maxProgress step 10) {
+                notification.setProgress(maxProgress, i, false)
+                notificationManagerCompat.notify(2, notification.build())
+                SystemClock.sleep(1000)
+            }
+            notification.setContentText("Download finished")
+                .setProgress(0, 0, false)
+                .setOngoing(false   )
+            notificationManagerCompat.notify(2, notification.build())
+        }).start()
+    }
+
     private fun getPendingIntent(): PendingIntent {
         val intent = Intent(this, MainActivity::class.java)
 
